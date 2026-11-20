@@ -13,15 +13,16 @@ const startingNotes = [
     body: 'Practice writing one handler for many inputs.',
   },
 ]
+
 function Notes() {
   const [notes, setNotes] = useState(() => {
     const saved = localStorage.getItem('notes')
     return saved ? JSON.parse(saved) : startingNotes
   })
 
-  const [formData, setFormData] = useState({
-    title: '',
-    body: ''
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('draft')
+    return saved ? JSON.parse(saved) : { title: '', body: '' }
   })
 
   const [searchQuery, setSearchQuery] = useState('')
