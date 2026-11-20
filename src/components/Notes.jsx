@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import NoteCard from './NoteCard.jsx'
 
 const startingNotes = [
@@ -34,7 +34,6 @@ function Notes() {
   useEffect(() => {
     const id = setTimeout(() => {
       localStorage.setItem('draft', JSON.stringify(formData))
-      console.log('draft saved:', formData.title)
     }, 1000)
     return () => clearTimeout(id)
   }, [formData])
@@ -74,9 +73,11 @@ function Notes() {
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== idToDelete))
   }
 
-  const filteredNotes = notes.filter((note) =>
-    note.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const visibleNotes = useMemo(() => {
+    return notes.filter((note) =>
+      note.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [notes, searchQuery])
 
   return (
     <div className="grid min-h-screen grid-cols-[420px_1fr]">
@@ -125,7 +126,7 @@ function Notes() {
         <h2 className="mb-6 text-3xl">All notes</h2>
 
         <ul className="grid grid-cols-3 items-start gap-5">
-          {filteredNotes.map((note) => (
+          {visibleNotes.map((note) => (
             <li
               key={note.id}
               className="relative min-h-32 bg-white px-6 py-5 shadow-[0_2px_4px_0_rgba(0,0,0,0.2),0_25px_50px_0_rgba(0,0,0,0.1)]"
@@ -145,7 +146,7 @@ function Notes() {
           ))}
         </ul>
 
-        {filteredNotes.length === 0 && (
+        {visibleNotes.length === 0 && (
           <p className="text-lg text-[#949494]">No notes found</p>
         )}
       </section>
